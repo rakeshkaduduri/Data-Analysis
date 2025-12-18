@@ -64,7 +64,6 @@ def _read_staged_csv(staged_path: str) -> pd.DataFrame:
  
     return df
  
- 
 def load_to_supabase(staged_csv_path: str, batch_size: int = 100):
     if not Path(staged_csv_path).exists():
         raise FileNotFoundError(f"Staged CSV not found at {staged_csv_path}")

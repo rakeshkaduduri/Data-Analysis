@@ -95,5 +95,3 @@ if __name__ == "__main__":
     if not raw_files:
         raise SystemExit("No raw weather JSON files found. Run extract.py first.")
     transform_data([raw_files[-1]])
- 
- 

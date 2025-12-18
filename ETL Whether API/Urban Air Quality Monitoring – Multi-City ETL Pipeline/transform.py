@@ -166,3 +166,4 @@ if __name__ == "__main__":
     print("\n📊 Sample data:")
     print(df_transformed.head())
     print(f"\n✅ Transform complete! Files ready for load stage.")
+

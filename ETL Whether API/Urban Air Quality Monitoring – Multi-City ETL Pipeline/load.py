@@ -145,3 +145,4 @@ if __name__ == "__main__":
     print("🚀 Starting Supabase load for air_quality_data")
     load_to_supabase()
     print("✅ Load finished")
+

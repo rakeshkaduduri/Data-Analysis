@@ -10,8 +10,8 @@ API Endpoint (No Token Needed):
 OpenAQ API (Public Open Data):
 https://api.openaq.org/v2/latest
 
-🟦 Your task
 
+🟦 Your task
 Write code that:
 Fetches AQI readings for 5 cities:
 Delhi, Bengaluru, Hyderabad, Mumbai, Kolkata

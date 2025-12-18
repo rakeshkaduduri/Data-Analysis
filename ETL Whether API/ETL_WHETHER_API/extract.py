@@ -42,5 +42,3 @@ def extract_weather_data(lat: str = LAT, lon: str = LON, days: int = FORECAST_DA
  
 if __name__ == "__main__":
     extract_weather_data()
- 
- 

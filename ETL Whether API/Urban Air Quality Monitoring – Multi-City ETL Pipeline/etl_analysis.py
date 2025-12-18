@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from dotenv import load_dotenv
-from supabase import create_client, Client  # pip install supabase
+from supabase import create_client, Client  
 
 load_dotenv()
 
