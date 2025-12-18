@@ -1,0 +1,149 @@
+Urban Air Quality Monitoring – Multi-City ETL Pipeline
+A government environmental agency wants to build an automated analytics system that monitors air quality across multiple 
+Indian cities. The agency provides an open, unauthenticated API (no token required) that returns Air Quality Index (AQI) and 
+pollutant information.
+You are required to build a complete ETL pipeline (Extract → Transform → Load → Analyze) using Python and Supabase.
+
+🟦 1️⃣ Extract (extract.py)
+Use the following public API:
+API Endpoint (No Token Needed):
+OpenAQ API (Public Open Data):
+https://api.openaq.org/v2/latest
+
+🟦 Your task
+
+Write code that:
+Fetches AQI readings for 5 cities:
+Delhi, Bengaluru, Hyderabad, Mumbai, Kolkata
+For each city, call the API with a query like:
+Save each API response separately inside:
+
+Implement:
+Retry logic (3 attempts)
+Graceful failure handling
+Logging of errors and empty responses
+Return list of all saved file paths.
+data/raw/cityname_raw_timestamp.json
+https://api.openaq.org/v2/latest?city=Delhi
+
+A global environmental analytics company, AtmosTrack, wants to build an automated Air Quality Monitoring system that collects hourly pollutant readings for major Indian metro cities. The company wants to analyze pollution trends, assess risk levels, and generate daily reports for internal dashboards.
+AtmosTrack has chosen the Open-Meteo Air Quality API, which is free and does not require tokens.
+You are required to build a complete ETL Pipeline (Extract → Transform → Load → Analyze) using Python.
+ 
+1️⃣ Extract (extract.py)
+Use the following API endpoint:
+https://air-quality-api.open-meteo.com/v1/air-quality
+    ?latitude=<lat>
+    &longitude=<lon>
+    &hourly=pm10,pm2_5,carbon_monoxide,nitrogen_dioxide,ozone,sulphur_dioxide,uv_index
+Cities to fetch (with coordinates):
+City	Latitude	Longitude
+Delhi	28.7041	77.1025
+Mumbai	19.0760	72.8777
+Bengaluru	12.9716	77.5946
+Hyderabad	17.3850	78.4867
+Kolkata	22.5726	88.3639
+Extraction Requirements
+Fetch hourly pollutant data for all 5 cities.
+Each API call must save raw JSON into:
+Implement:
+Retry logic (3 attempts)
+Graceful failure handling
+Logging of API errors
+Return a list of all saved file paths.
+data/raw/<city>_raw_<timestamp>.json
+ 
+2️⃣ Transform (transform.py)
+Each city’s JSON must be flattened into tabular format with one row per hour.
+A. Required Columns
+city
+time
+pm10
+pm2_5
+carbon_monoxide
+nitrogen_dioxide
+sulphur_dioxide
+ozone
+uv_index
+B. Derived Features (Feature Engineering)
+1. AQI based on PM2.5
+0–50     → Good
+51–100   → Moderate
+101–200  → Unhealthy
+201–300  → Very Unhealthy>300     → Hazardous 
+2. Pollution Severity Score
+Use weighted pollutants:
+severity = (pm2_5 * 5) + (pm10 * 3) +
+           (nitrogen_dioxide * 4) + (sulphur_dioxide * 4) +
+           (carbon_monoxide * 2) + (ozone * 3)
+3. Risk Classification
+severity > 400 → "High Risk"severity > 200 → "Moderate Risk" else           → "Low Risk" 
+4. Temperature Hour-of-Day Feature (Optional)
+Extract hour:
+hour = time.hour
+C. Transform Requirements
+Convert timestamps into datetime format
+Convert all pollutant values to numeric
+Remove records where all pollutant readings are missing
+Save transformed data into:
+data/staged/air_quality_transformed.csv
+ 
+
+3️⃣ Load (load.py) – Supabase
+Create table:
+air_quality_data (
+    id BIGSERIAL PRIMARY KEY,
+    city TEXT,
+    time TIMESTAMP,
+    pm10 FLOAT,
+    pm2_5 FLOAT,
+    carbon_monoxide FLOAT,
+    nitrogen_dioxide FLOAT,
+    sulphur_dioxide FLOAT,
+    ozone FLOAT,
+    uv_index FLOAT,
+    aqi_category TEXT,
+    severity_score FLOAT,
+    risk_flag TEXT,
+    hour INTEGER)
+Load Requirements
+Batch insert records (batch size = 200)
+Auto-convert NaN → NULL
+Convert datetime to ISO formatted strings
+Retry failed batches (2 retries)
+Print summary of inserted rows
+
+
+🟩 4️⃣ Analysis (etl_analysis.py)
+Read the loaded data from Supabase and perform:
+A. KPI Metrics
+City with highest average PM2.5
+City with the highest severity score
+Percentage of High/Moderate/Low risk hours
+Hour of day with worst AQI
+B. City Pollution Trend Report
+For each city:
+time → pm2_5, pm10, ozone
+C. Export Outputs
+Save the following CSVs into data/processed/:
+summary_metrics.csv
+city_risk_distribution.csv
+pollution_trends.csv
+D. Visualizations
+Save the following PNG plots:
+Histogram of PM2.5
+Bar chart of risk flags per city
+Line chart of hourly PM2.5 trends
+Scatter: severity_score vs pm2_5
+ 
+
+🟩 5 Build a Combined ETL Runner
+Write run_pipeline.py:
+extract
+transform
+load
+analysis
+Automate it as:
+python run_pipeline.py
+ 
+ 
